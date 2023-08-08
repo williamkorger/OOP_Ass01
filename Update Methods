@@ -1,0 +1,360 @@
+
+package conferenceregistration1;
+
+/**
+ *
+ * @author will
+ */
+
+import java.util.Scanner;
+import java.util.ArrayList;
+
+
+public class ConferenceRegistration1 {
+
+ 
+    final int ENTER_MEMBER = 1;    
+    final int SEARCH_A_MEMBER = 2;
+    final int VIEW_ALL_MEMBERS = 3;
+    final int TOTAL_REG_FEE = 4;
+    final int EXIT = 5;
+    
+    // Declare an ArrayList object to store member list objects.
+    ArrayList<Member> memberList = new ArrayList<>();
+  
+    
+    // this method get a MenuItem
+    private int getMenuItem()
+    {
+    
+        Scanner inputMenuChoice = new Scanner(System.in);
+        
+        System.out.println("\nPlease select from the following");        
+        System.out.println(ENTER_MEMBER  + ". Enter member details");       
+        System.out.println(SEARCH_A_MEMBER + ". Search a member");
+        System.out.println(VIEW_ALL_MEMBERS + ". View all members");
+        System.out.println(TOTAL_REG_FEE + ". View total registration fee");
+        
+        System.out.println(EXIT + ". Exit the application");
+        System.out.print("\nEnter choice ==> ");
+
+        String choice = inputMenuChoice.nextLine();
+
+	while (choice.equals("") || !isStringNumeric(choice))
+	{
+          System.out.println("Error - Menu selection cannot be blank and must be numeric");
+	    System.out.print("Enter choice ==> ");
+
+	    choice = inputMenuChoice.nextLine();
+	}
+	return Integer.parseInt(choice);
+    }
+    
+    //check if a string is numeric
+    private boolean isStringNumeric(String str)
+    {
+	for (int i = 0; i < str.length(); i++)
+    	{
+    	    if (!Character.isDigit(str.charAt(i)))
+		return false;
+	}
+
+	return true;
+    }
+    
+    //check if a string is validate 
+    private boolean isValidate(String input)
+    {
+      if (input.equalsIgnoreCase("S") || input.equalsIgnoreCase("K"))
+      {       
+          return true;
+      }
+      
+      if (input.equalsIgnoreCase("N"))
+      {
+          return true;
+      }
+      return false;
+           
+    }
+    
+    
+    private void processOrders() {
+        System.out.printf("\nWelcome to the Conference Registration System\n\n");
+        
+        int choice = getMenuItem();
+        
+        while (choice != EXIT) {
+            switch (choice) {
+                case ENTER_MEMBER:
+                    enterMemberRecord();
+                    break;
+                case SEARCH_A_MEMBER:
+                    searchMember();
+                    break;
+                case VIEW_ALL_MEMBERS:
+                    viewAllMembers();
+                    break;
+                case TOTAL_REG_FEE:
+                    totalRegFee();
+                    break;
+                default:
+                    System.out.println("ERROR choice not recognized");
+            }
+            
+            choice = getMenuItem();
+        }
+        
+        System.out.println("Thank you for using the Conference Registration System!");
+        System.out.println("Program by: William Korger");
+        System.out.printIn("12151970 10/08/2023");
+    }
+    
+    private void totalRegFee() {
+      float totalFee = 0.0F;
+  
+      for (Member member : memberList) {
+          if (member.isStudent()) {
+              totalFee += member.getRegFee() * 0.8; // Apply a 20% discount for students
+          } else if (member.isKeynote()) {
+              totalFee += 0; // No fee for keynote speakers
+          } else {
+              totalFee += member.getRegFee();
+          }
+      }
+  
+      System.out.println("Total Registration Fee: $" + totalFee);
+    }
+
+    
+    
+    private void viewAllMembers() {
+      if (memberList.isEmpty()) {
+          System.out.println("No member found!");
+      } else {
+          System.out.println("List of Members:");
+          for (Member member : memberList) {
+              System.out.println("-------------------------");
+              System.out.println(member.toString());
+              System.out.println("-------------------------");
+          }
+      }
+    }
+
+    
+    
+    private void searchMember()
+    {
+        Scanner inText = new Scanner(System.in);
+        String input;
+        int memberID;
+        
+        do {
+            System.out.printf("Pease enter a numberID: ");
+            
+            input = inText.nextLine();
+           
+            if (input.equals("") || !isStringNumeric(input))     
+                System.out.printf("Error - Member ID cannot be blank and must be numeric\n");
+                
+        } while (input.equals("") || !isStringNumeric(input));
+
+        memberID = Integer.parseInt(input);
+
+        int index = findMemberRecord(memberID);
+
+        if (index > -1) 
+        {   
+            Member foundMember = memberList.get(index);
+            System.out.println("Member found:");
+            System.out.println("-------------------------");
+            System.out.println(foundMember.toString());
+            System.out.println("-------------------------");
+                                        
+        }    
+        else
+            System.out.println("No record found");           	
+    }
+    
+    
+    private int findMemberRecord(int memberID) {
+        for (int i = 0; i < memberList.size(); i++) {
+            if (memberList.get(i).getMemberID() == memberID) {
+                return i; // Return index if member found
+            }
+        }
+        return -1; // Return -1 if member not found
+    }
+
+    private void enterMemberRecord() {
+      int memberID;
+      String fullName;
+      String university;
+      String email;
+      String phoneNumber;
+      float regFee = 0.0F;
+      
+      float discount = 0.0F;
+      String talk = "";
+  
+      Scanner inText = new Scanner(System.in);
+  
+      // Enter memberID
+      do {
+          System.out.print("Please enter member ID (must be an integer): ");
+          input = inText.nextLine();
+  
+          if (input.equals("") || !isStringNumeric(input)) {
+              System.out.println("Error - Member ID must be a number and cannot be blank");
+          }
+      } while (input.equals("") || !isStringNumeric(input));
+  
+      memberID = Integer.parseInt(input);
+  
+      // Call findMemberRecord() method to check if the member ID already exists in the list
+      int index = findMemberRecord(memberID);
+      if (index != -1) {
+          System.out.println("Member with this ID already exists");
+          return; // Return to the main menu
+      }
+  
+      // Enter other details
+      System.out.print("Enter full name: ");
+      fullName = inText.nextLine();
+  
+      System.out.print("Enter university: ");
+      university = inText.nextLine();
+  
+      System.out.print("Enter email: ");
+      email = inText.nextLine();
+  
+      System.out.print("Enter phone number: ");
+      phoneNumber = inText.nextLine();
+  
+      // Enter registration fee
+      do {
+          System.out.print("Enter registration fee (numeric value): ");
+          input = inText.nextLine();
+  
+          if (input.equals("") || !isStringNumeric(input)) {
+              System.out.println("Error - Registration fee must be a number and cannot be blank");
+          }
+      } while (input.equals("") || !isStringNumeric(input));
+  
+      regFee = Float.parseFloat(input);
+  
+      // Ask member type
+      do {
+          System.out.print("Is this member a Student or a Keynote speaker? ('S' for student, 'K' for keynote speaker, 'N' for None of above): ");
+          input = inText.nextLine();
+  
+          if (input.equals("") || !isValidate(input)) {
+              System.out.println("Error - please select S, K or N");
+          }
+      } while (input.equals("") || !isValidate(input));
+  
+      if (input.equalsIgnoreCase("S")) {
+          isStudent = true;
+  
+          // Ask for discount
+          do {
+              System.out.print("Enter discount value (numeric value): ");
+              input = inText.nextLine();
+  
+              if (input.equals("") || !isStringNumeric(input)) {
+                  System.out.println("Error - Discount must be a number and cannot be blank");
+              }
+          } while (input.equals("") || !isStringNumeric(input));
+  
+          discount = Float.parseFloat(input);
+      } else if (input.equalsIgnoreCase("K")) {
+          isKeynote = true;
+  
+          // Enter talk
+          System.out.print("Enter talk: ");
+          talk = inText.nextLine();
+      }
+  
+      // Construct object and add the new member to the list based on type
+      if (isStudent) {
+          Member studentMember = new Member(memberID, fullName, university, email, phoneNumber, regFee - discount);
+          memberList.add(studentMember);
+          System.out.println("Student member added:\n" + studentMember.toString());
+      } else if (isKeynote) {
+          Member keynoteMember = new Member(memberID, fullName, university, email, phoneNumber, 0);
+          keynoteMember.setTalk(talk);
+          memberList.add(keynoteMember);
+          System.out.println("Keynote speaker member added:\n" + keynoteMember.toString());
+      } else {
+          Member fullMember = new Member(memberID, fullName, university, email, phoneNumber, regFee);
+          memberList.add(fullMember);
+          System.out.println("Full member added:\n" + fullMember.toString());
+      }
+    }
+
+    // Super Class Member
+    class Member {
+      private int memberID;
+      private String fullName;
+      private String university;
+      private String email;
+      private String phoneNumber;
+      private float regFee;
+  
+      // Constructor 
+      public Member(int memberID, String fullName, String university, String email, String phoneNumber, float regFee, String talk) {
+          this.memberID = memberID;
+          this.fullName = fullName;
+          this.university = university;
+          this.email = email;
+          this.phoneNumber = phoneNumber;
+          this.regFee = regFee;
+          this.talk = talk;
+      }
+
+      }
+  
+      // Getters and Setters
+      public int getMemberID() {
+          return memberID;
+      }
+  
+      public String getFullName() {
+          return fullName;
+      }
+  
+      public String getUniversity() {
+          return university;
+      }
+  
+      public String getEmail() {
+          return email;
+      }
+  
+      public String getPhoneNumber() {
+          return phoneNumber;
+      }
+  
+      public float getRegFee() {
+          return regFee;
+      }
+  
+        // toString Method to Display Member Details
+        @Override
+        public String toString() {
+          return "Member ID: " + memberID +
+                 "\nFull Name: " + fullName +
+                 "\nUniversity: " + university +
+                 "\nEmail: " + email +
+                 "\nPhone Number: " + phoneNumber +
+                 "\nRegistration Fee: $" + regFee;
+      }
+    }
+
+    public static void main(String[] args) {
+        
+        ConferenceRegistration1 myApp = new ConferenceRegistration1();
+	    myApp.processOrders();
+    }
+    
+}
