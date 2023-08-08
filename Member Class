@@ -3,7 +3,7 @@ package conferenceregistration1;
 
 /**
  *
- * @author lil
+ * @author will
  */
 
 import java.util.Scanner;
